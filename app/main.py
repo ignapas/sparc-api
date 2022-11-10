@@ -1223,3 +1223,17 @@ def search_readme(query):
 @app.route("/metrics", methods=["GET"])
 def metrics():
     return usage_metrics
+
+@app.route("/get-service-inputs", methods=["GET"])
+def get_service_inputs():
+    from flask import request
+    import urllib.parse
+    service = urllib.parse.quote_plus(request.args.get('service'))
+    version = urllib.parse.quote_plus(request.args.get('version'))
+    url = f'https://api.osparc-master.speag.com/v0/solvers/{service}/releases/{version}/ports'
+    headers = {
+        'Authorization': 'Basic ' + 'ZGU5YTUyOWMtZWE5Yi01NGFhLWE5ZmMtNzhlNjE1ZjkxNGVkOjhjZGUxN2QyLTBkMmQtNTU3OS1hOGI3LWUxYTRmY2ZjZTAxYQ==',
+        'accept': 'application/json'
+    }
+    resp = requests.get(url=url, headers=headers)
+    return { "inputs": resp.json() }
