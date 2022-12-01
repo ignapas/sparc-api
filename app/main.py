@@ -1,5 +1,6 @@
 import atexit
 import base64
+import os
 
 from app.metrics.pennsieve import get_download_count
 from app.metrics.contentful import init_cf_client, get_funded_projects_count
@@ -1165,10 +1166,15 @@ def get_service_inputs():
     import urllib.parse
     service = urllib.parse.quote_plus(request.args.get('service'))
     version = urllib.parse.quote_plus(request.args.get('version'))
-    url = f'https://api.osparc-master.speag.com/v0/solvers/{service}/releases/{version}/ports'
+    url = (
+        f'https://api.osparc-master.speag.com/v0/solvers/{service}/releases/{version}/ports'
+        if version != 'null'
+        else f'https://api.osparc-master.speag.com/v0/studies/{service}/ports'
+    )
     headers = {
-        'Authorization': 'Basic ' + 'ZGU5YTUyOWMtZWE5Yi01NGFhLWE5ZmMtNzhlNjE1ZjkxNGVkOjhjZGUxN2QyLTBkMmQtNTU3OS1hOGI3LWUxYTRmY2ZjZTAxYQ==',
+        'Authorization': 'Basic ' + os.environ.get('OSPARC_API_TOKEN', ''),
         'accept': 'application/json'
     }
+    print(url, headers)
     resp = requests.get(url=url, headers=headers)
     return { "inputs": resp.json() }
