@@ -1175,6 +1175,5 @@ def get_service_inputs():
         'Authorization': 'Basic ' + os.environ.get('OSPARC_API_TOKEN', ''),
         'accept': 'application/json'
     }
-    print(url, headers)
     resp = requests.get(url=url, headers=headers)
     return { "inputs": resp.json() }
